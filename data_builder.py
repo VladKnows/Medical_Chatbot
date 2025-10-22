@@ -1,6 +1,5 @@
 import json
 import numpy as np
-from sentence_transformers import SentenceTransformer
 import faiss
 
 
@@ -31,7 +30,6 @@ def generate_embeddings(json_path, output_name, model):
     with open(json_path, "r", encoding="utf-8") as f:
         sentences = json.load(f)
 
-    print("Generating embeddings...")
     embeddings = model.encode(sentences, show_progress_bar=True, convert_to_numpy=True)
 
     np.save(f"{output_name}.npy", embeddings)
