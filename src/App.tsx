@@ -10,7 +10,7 @@ import './index.css';
 
 function App() {
   return (
-    <Router>
+    <Router basename="/Medical_Chatbot/">{/* Added basename for GitHub Pages */}
       <div className="min-h-screen bg-gray-50 pb-20">
         <Routes>
           <Route path="/" element={<Home />} />
