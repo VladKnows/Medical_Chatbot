@@ -4,20 +4,6 @@ import data_gathering as dg
 import data_builder as db
 import chatbot as ch
 
-import torch
-
-from transformers import AutoTokenizer, AutoModelForCausalLM
-
-model_name = "openlm-research/open_llama_3b_v2"
-
-tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=True)
-chat_model = AutoModelForCausalLM.from_pretrained(
-    model_name,
-    device_map="auto",
-    dtype=torch.float16,
-    use_auth_token=True
-)
-
 if __name__ == "__main__":
     print("Choose one of the following options:")
     print("0 -> Extract details about illnesses")
@@ -26,6 +12,7 @@ if __name__ == "__main__":
     x = input("Option: ")
 
     embedding_model_name = "all-mpnet-base-v2"
+    chat_model_name = "D:/Models/falcon"
 
     if x == "0":
         dg.save_illness_links(dg.get_links())
@@ -44,8 +31,8 @@ if __name__ == "__main__":
         embedding_model = SentenceTransformer(embedding_model_name)
 
         query = input("Ask a medical question: ")
-        answer = ch.generate_answer(query, "faiss.index", "sentences.json")
-
+        answer = ch.generate_answer(query, "faiss.index", "sentences.json", chat_model_name)
+        answer = answer.split("Answer:", 1)[1].strip()
         print(f"Assistant: {answer}")
     else:
         print("Wrong input")

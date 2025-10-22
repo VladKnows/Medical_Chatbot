@@ -4,7 +4,7 @@ from sentence_transformers import SentenceTransformer
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
-def generate_answer(query, index_file, sentences_file, chat_model_name="tiiuae/falcon-7b-instruct", model_name="all-mpnet-base-v2", k=5, max_tokens=300):
+def generate_answer(query, index_file, sentences_file, chat_model_name, model_name="all-mpnet-base-v2", k=5, max_tokens=300):
     embed_model = SentenceTransformer(model_name)
     index = faiss.read_index(index_file)
     with open(sentences_file, "r", encoding="utf-8") as f:
@@ -22,6 +22,7 @@ def generate_answer(query, index_file, sentences_file, chat_model_name="tiiuae/f
     Use the following context to answer.
     If the symptoms are vague, ask for more details.
     If the question is non-medical, politely say you cannot answer.
+    Do NOT include the context or the question IN your response.
     Context:
     {retrieved_context}
     
@@ -29,15 +30,30 @@ def generate_answer(query, index_file, sentences_file, chat_model_name="tiiuae/f
     Answer:
     """
 
-    tokenizer = AutoTokenizer.from_pretrained(chat_model_name, use_fast=False)
+    tokenizer = AutoTokenizer.from_pretrained(chat_model_name)
+
     chat_model = AutoModelForCausalLM.from_pretrained(
         chat_model_name,
         device_map="auto",
-        dtype=torch.float16
+        dtype=torch.float16,
+        offload_folder="D:/Models/offload"
     )
 
-    inputs = tokenizer(system_prompt, return_tensors="pt").to(chat_model.device)
-    outputs = chat_model.generate(**inputs, max_new_tokens=max_tokens)
+    inputs = tokenizer(
+        system_prompt,
+        return_tensors="pt",
+        truncation=True,
+        max_length=1024
+    )
+    inputs = {k: v.to(chat_model.device) for k, v in inputs.items()}
+
+    outputs = chat_model.generate(
+        **inputs,
+        max_new_tokens=max_tokens,
+        do_sample=True,  # optional: makes output more natural
+        top_p=0.9,  # nucleus sampling
+        temperature=0.7  # controls creativity
+    )
     answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
     return answer
