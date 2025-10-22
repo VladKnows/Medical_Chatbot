@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Home, Camera, User, Package, MessageCircle } from 'lucide-react';
-import { cn } from '@/lib/utils.ts';
+import { cn } from '@/lib/utils';
 
 const navigationItems = [
   {
