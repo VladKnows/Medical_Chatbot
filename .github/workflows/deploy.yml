@@ -4,6 +4,8 @@ on:
   push:
     branches: [ "main", "master" ]
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'
 
 permissions:
   contents: read
@@ -32,6 +34,9 @@ jobs:
         
       - name: Build
         run: npm run build
+
+      - name: Create 404 fallback for SPA routes
+        run: cp ./dist/index.html ./dist/404.html
         
       - name: Setup Pages
         uses: actions/configure-pages@v5
