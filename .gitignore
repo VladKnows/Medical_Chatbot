@@ -112,3 +112,7 @@ jspm_packages/
 # Temporary folders
 tmp/
 temp/
+
+# Frontend: include src/lib folder despite Python ignore rules
+!src/lib/
+!src/lib/**
