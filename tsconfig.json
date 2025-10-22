@@ -23,12 +23,7 @@
     /* Path mapping */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@/lib/*": ["src/lib/*"],
-      "@/components/*": ["src/components/*"],
-      "@/pages/*": ["src/pages/*"],
-      "@/hooks/*": ["src/hooks/*"],
-      "@/assets/*": ["src/assets/*"]
+      "@/*": ["src/*"]
     }
   },
   "include": ["src", "src/types/global.d.ts"],
