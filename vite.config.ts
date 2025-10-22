@@ -6,14 +6,14 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
-      '@/lib': path.resolve(__dirname, 'src/lib'),
-      '@/components': path.resolve(__dirname, 'src/components'),
-      '@/pages': path.resolve(__dirname, 'src/pages'),
-      '@/hooks': path.resolve(__dirname, 'src/hooks'),
-      '@/assets': path.resolve(__dirname, 'src/assets'),
-    },
+    alias: [
+      { find: '@', replacement: path.resolve(__dirname, 'src') },
+      { find: '@/lib', replacement: path.resolve(__dirname, 'src/lib') },
+      { find: '@/components', replacement: path.resolve(__dirname, 'src/components') },
+      { find: '@/pages', replacement: path.resolve(__dirname, 'src/pages') },
+      { find: '@/hooks', replacement: path.resolve(__dirname, 'src/hooks') },
+      { find: '@/assets', replacement: path.resolve(__dirname, 'src/assets') },
+    ],
   },
   server: {
     port: 3000,
