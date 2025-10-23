@@ -171,6 +171,8 @@ export default function CameraScanner() {
     setCapturedImage(null);
     setMedicineResult(null);
     setError(null);
+    setExtractedText(null);
+    setIsExtractingText(false);
     startCamera();
   }, [startCamera]);
 
