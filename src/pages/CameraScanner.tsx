@@ -2,6 +2,8 @@ import { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, X, RotateCcw, Check, Loader2, AlertTriangle, Info } from 'lucide-react';
 import { toast } from 'sonner';
+import Tesseract from 'tesseract.js';
+
 
 interface MedicineResult {
   id: string;
@@ -25,6 +27,10 @@ export default function CameraScanner() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [medicineResult, setMedicineResult] = useState<MedicineResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const [extractedText, setExtractedText] = useState<string | null>(null);
+  const [isExtractingText, setIsExtractingText] = useState(false);
+
 
   const startCamera = useCallback(async () => {
     try {
@@ -92,6 +98,32 @@ export default function CameraScanner() {
     };
     reader.readAsDataURL(file);
   }, []);
+
+  const extractText = useCallback(async () => {
+    if (!capturedImage) return;
+
+    setIsExtractingText(true);
+    setExtractedText(null);
+
+    try {
+      const { data } = await Tesseract.recognize(
+        capturedImage,
+        'eng', // limba textului
+        {
+          logger: (m) => console.log(m), // opțional: log progres
+        }
+      );
+
+      setExtractedText(data.text);
+      toast.success('Text extracted successfully!');
+    } catch (err) {
+      console.error('Error extracting text:', err);
+      toast.error('Failed to extract text from image');
+    } finally {
+      setIsExtractingText(false);
+    }
+  }, [capturedImage]);
+
 
   const analyzeMedicine = useCallback(async () => {
     if (!capturedImage) return;
@@ -246,21 +278,45 @@ export default function CameraScanner() {
 
       {/* Captured Image Review */}
       {capturedImage && !medicineResult && (
-        <div className="relative w-full h-full">
-          <img
-            src={capturedImage}
-            alt="Captured medicine"
-            className="w-full h-full object-cover"
-          />
+        <div className="flex flex-col items-center justify-start min-h-screen bg-black p-4">
           
-          {/* Action Buttons */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-4">
+          {/* Imaginea */}
+          <div className="w-full max-w-md rounded-xl overflow-hidden mb-4 shadow-lg">
+            <img
+              src={capturedImage}
+              alt="Captured medicine"
+              className="w-full h-auto object-contain"
+            />
+          </div>
+
+          {/* Text extras */}
+          {extractedText && (
+            <div className="w-full max-w-md bg-white rounded-xl p-4 mb-6 shadow">
+              <h4 className="font-semibold text-gray-800 mb-2">Extracted Text:</h4>
+              <pre className="text-sm text-gray-700 whitespace-pre-wrap">{extractedText}</pre>
+            </div>
+          )}
+
+          {/* Butoane de acțiune */}
+          <div className="flex space-x-4 mb-4">
             <button
               onClick={retakePhoto}
               disabled={isAnalyzing}
               className="w-14 h-14 bg-gray-700/80 backdrop-blur-sm rounded-full flex items-center justify-center disabled:opacity-50"
             >
               <RotateCcw className="text-white" size={24} />
+            </button>
+
+            <button
+              onClick={extractText}
+              disabled={isExtractingText || isAnalyzing}
+              className="w-14 h-14 bg-purple-600 rounded-full flex items-center justify-center disabled:opacity-50"
+            >
+              {isExtractingText ? (
+                <Loader2 className="text-white animate-spin" size={24} />
+              ) : (
+                <span className="text-white text-sm">OCR</span>
+              )}
             </button>
             
             <button
@@ -276,6 +332,7 @@ export default function CameraScanner() {
             </button>
           </div>
 
+          {/* Loader analiză */}
           {isAnalyzing && (
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
               <div className="bg-white rounded-xl p-6 text-center">
@@ -287,6 +344,7 @@ export default function CameraScanner() {
           )}
         </div>
       )}
+
 
       {/* Medicine Result */}
       {medicineResult && (
