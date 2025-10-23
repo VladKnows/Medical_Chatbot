@@ -4,6 +4,8 @@ import faiss
 
 
 def create_sentence(json_path, output_path):
+    json_path = "data/" + json_path
+    output_path = "data/" + output_path
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -27,6 +29,9 @@ def create_sentence(json_path, output_path):
 
 
 def generate_embeddings(json_path, output_name, model):
+    json_path = "data/" + json_path
+    output_name = "data/" + output_name
+
     with open(json_path, "r", encoding="utf-8") as f:
         sentences = json.load(f)
 
@@ -35,7 +40,7 @@ def generate_embeddings(json_path, output_name, model):
     np.save(f"{output_name}.npy", embeddings)
 
 
-def build_faiss_index(sentences_file, vectors_file, model, index_file):
+def build_faiss_index(sentences_file, vectors_file, index_file):
     with open(sentences_file, "r", encoding="utf-8") as f:
         sentences = json.load(f)
 

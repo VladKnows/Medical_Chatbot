@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-def get_links(driver_path="msedgedriver.exe", headless=True):
+def get_links(driver_path="data/msedgedriver.exe", headless=True):
     edge_options = Options()
     if headless:
         edge_options.add_argument("--headless")
@@ -50,13 +50,14 @@ def get_links(driver_path="msedgedriver.exe", headless=True):
 
 
 def save_illness_links(diseases, filename="illness_links.json"):
+    filename = "data/" + filename
     illness_links = json.dumps(diseases, indent=4)
 
-    with open("illness_links.json", "w", encoding="utf-8") as f:
+    with open(filename, "w", encoding="utf-8") as f:
         f.write(illness_links)
 
 
-def extract_illness_details(link, driver_path="msedgedriver.exe", headless=True):
+def extract_illness_details(link, driver_path="data/msedgedriver.exe", headless=True):
     edge_options = Options()
     if headless:
         edge_options.add_argument("--headless")
@@ -151,6 +152,9 @@ def extract_illness_details(link, driver_path="msedgedriver.exe", headless=True)
 
 
 def extract_all_illness_details(input_file="illness_links.json", output_file="illness_details.json"):
+    input_file = "data/" + input_file
+    output_file = "data/" + output_file
+
     with open(input_file, "r", encoding="utf-8") as f:
         illness_links = json.load(f)
 

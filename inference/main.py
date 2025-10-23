@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
         db.create_sentence("illness_details.json", "sentences.json")
         db.generate_embeddings("sentences.json", "vectors", embedding_model)
-        db.build_faiss_index("sentences.json", "vectors.npy", embedding_model, "faiss.index")
+        db.build_faiss_index("sentences.json", "vectors.npy", "faiss.index")
 
         print("Index built!")
     elif x == "2":

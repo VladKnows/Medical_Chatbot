@@ -5,6 +5,9 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
 def generate_answer(query, index_file, sentences_file, chat_model_name, model_name="all-mpnet-base-v2", k=5, max_tokens=300):
+    index_file = "data/" + index_file
+    sentences_file = "data/" + sentences_file
+
     embed_model = SentenceTransformer(model_name)
     index = faiss.read_index(index_file)
     with open(sentences_file, "r", encoding="utf-8") as f:
