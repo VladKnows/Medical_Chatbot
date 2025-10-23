@@ -17,7 +17,14 @@ export default defineConfig({
     open: true,
     hmr: {
       overlay: false
-    }
+    },
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:5000', // backend Flask
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   build: {
     outDir: 'dist',
