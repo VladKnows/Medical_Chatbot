@@ -29,10 +29,14 @@ if __name__ == "__main__":
         print("Index built!")
     elif x == "2":
         embedding_model = SentenceTransformer(embedding_model_name)
+        chat_history = []
 
-        query = input("Ask a medical question: ")
-        answer = ch.generate_answer(query, "faiss.index", "sentences.json", chat_model_name)
-        answer = answer.split("Answer:", 1)[1].strip()
-        print(f"Assistant: {answer}")
+        while True:
+            query = input("You: ")
+            answer = ch.generate_answer(query, "faiss.index", "sentences.json", chat_history, chat_model_name)
+            answer = answer.split("Answer:", 1)[1].strip()
+            chat_history.append((query, answer))
+
+            print(f"Assistant: {answer}")
     else:
         print("Wrong input")

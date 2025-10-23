@@ -4,7 +4,7 @@ from sentence_transformers import SentenceTransformer
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
-def generate_answer(query, index_file, sentences_file, chat_model_name, model_name="all-mpnet-base-v2", k=5, max_tokens=300):
+def generate_answer(query, index_file, sentences_file, chat_history, chat_model_name, model_name="all-mpnet-base-v2", k=5, max_tokens=300):
     index_file = "data/" + index_file
     sentences_file = "data/" + sentences_file
 
@@ -19,6 +19,8 @@ def generate_answer(query, index_file, sentences_file, chat_model_name, model_na
 
     retrieved_context = "\n".join([sentences[idx] for idx in I[0]])
 
+    history_text = "\n".join([f"User: {u}\nAssistant: {a}" for u, a in chat_history])
+
     system_prompt = f"""
     You are a medical assistant. You can provide information about diseases, symptoms, causes, and risk factors.
     Only respond to medical questions.
@@ -26,10 +28,14 @@ def generate_answer(query, index_file, sentences_file, chat_model_name, model_na
     If the symptoms are vague, ask for more details.
     If the question is non-medical, politely say you cannot answer.
     Do NOT include the context or the question IN your response.
+    The user said the following:"{query}"
+    
     Context:
     {retrieved_context}
     
-    Question: {query}
+    Conversation history:
+    {history_text}
+    
     Answer:
     """
 
@@ -53,9 +59,9 @@ def generate_answer(query, index_file, sentences_file, chat_model_name, model_na
     outputs = chat_model.generate(
         **inputs,
         max_new_tokens=max_tokens,
-        do_sample=True,  # optional: makes output more natural
-        top_p=0.9,  # nucleus sampling
-        temperature=0.7  # controls creativity
+        do_sample=True,
+        top_p=0.9,
+        temperature=0.7
     )
     answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
