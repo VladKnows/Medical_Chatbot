@@ -2,7 +2,16 @@
 from flask import Flask, request, jsonify
 import uuid
 
+from sentence_transformers import SentenceTransformer
+import chatbot as ch
+
 app = Flask(__name__)
+
+embedding_model_name = "all-mpnet-base-v2"
+chat_model_name = "D:/Models/falcon"
+
+embedding_model = SentenceTransformer(embedding_model_name)
+chat_history = []
 
 @app.route('/api/chat/start', methods=['POST'])
 def start_chat():
@@ -22,11 +31,12 @@ def start_chat():
 def chat_message(session_id):
     data = request.get_json()
     user_message = data.get('message', '')
+
+    answer = ch.generate_answer(user_message, "faiss.index", "sentences.json", chat_history, chat_model_name)
+    answer = answer.split("Answer:", 1)[1].strip()
+    chat_history.append((user_message, answer))
     
-    # Aici ar trebui să integrezi AI-ul real
-    ai_response = f"Received: {user_message}"
-    
-    return jsonify({"response": ai_response})
+    return jsonify({"response": answer})
 
 if __name__ == '__main__':
     app.run(debug=True)
