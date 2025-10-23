@@ -173,7 +173,6 @@ export default function CameraScanner() {
     setError(null);
     setExtractedText(null);
     setIsExtractingText(false);
-    startCamera();
   }, [startCamera]);
 
   const handleSafetyCheck = useCallback(() => {
@@ -213,8 +212,10 @@ export default function CameraScanner() {
                 autoPlay
                 playsInline
                 muted
-                className="w-full h-full object-cover"
+                style={{ width: '640px', height: '480px' }}
+                className="object-cover"
               />
+
               
               {/* Scan Frame Overlay */}
               <div className="absolute inset-0 flex items-center justify-center">
