@@ -4,6 +4,26 @@ from sentence_transformers import SentenceTransformer
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 import os
+def get_user_profile(user_profile_data):
+    profile_text = ""
+    if user_profile_data:
+        # Convertim JSON în text simplu
+        parts = []
+        if "dateOfBirth" in user_profile_data:
+            parts.append(f"Age: {2025 - int(user_profile_data['dateOfBirth'][:4])}")
+        if "gender" in user_profile_data:
+            parts.append(f"Gender: {user_profile_data['gender']}")
+        if "conditions" in user_profile_data and user_profile_data["conditions"]:
+            parts.append(f"Conditions: {', '.join(user_profile_data['conditions'])}")
+        if "allergies" in user_profile_data and user_profile_data["allergies"]:
+            parts.append(f"Allergies: {', '.join(user_profile_data['allergies'])}")
+        if "currentMedications" in user_profile_data and user_profile_data["currentMedications"]:
+            parts.append(f"Medications: {', '.join(user_profile_data['currentMedications'])}")
+        if "isPregnant" in user_profile_data and user_profile_data["isPregnant"]:
+            parts.append(f"Pregnant: Yes (due date: {user_profile_data.get('pregnancyDueDate', 'unknown')})")
+        
+        profile_text = "; ".join(parts)
+    return profile_text
 
 def generate_answer(query, index_file, sentences_file, chat_history, chat_model_name, model_name="all-mpnet-base-v2", k=5, max_tokens=300):
     index_file = "data/" + index_file
@@ -28,9 +48,7 @@ def generate_answer(query, index_file, sentences_file, chat_history, chat_model_
     if os.path.exists(profile_path):
         with open(profile_path, "r", encoding="utf-8") as f:
             user_profile_data = json.load(f)
-    profile_text = ""
-    if user_profile_data:
-        profile_text = json.dumps(user_profile_data, indent=2)
+    profile_text = get_user_profile(user_profile_data)
 
     system_prompt = f"""
     You are a medical assistant. You can provide information about diseases, symptoms, causes, and risk factors.
