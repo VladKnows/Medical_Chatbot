@@ -12,7 +12,7 @@ if __name__ == "__main__":
     x = input("Option: ")
 
     embedding_model_name = "all-mpnet-base-v2"
-    chat_model_name = "D:/Models/falcon"
+    chat_model_name = "C:/Users/iasmina/Projects/python/medical_chatbot_heaven_solutions/Falcon-H1"
 
     if x == "0":
         dg.save_illness_links(dg.get_links())

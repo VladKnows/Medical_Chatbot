@@ -3,6 +3,7 @@ import faiss
 from sentence_transformers import SentenceTransformer
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
+import os
 
 def generate_answer(query, index_file, sentences_file, chat_history, chat_model_name, model_name="all-mpnet-base-v2", k=5, max_tokens=300):
     index_file = "data/" + index_file
@@ -21,6 +22,16 @@ def generate_answer(query, index_file, sentences_file, chat_history, chat_model_
 
     history_text = "\n".join([f"User: {u}\nAssistant: {a}" for u, a in chat_history])
 
+    profile_path = os.path.join(os.path.dirname(__file__), "..", "user_profile.json")
+
+    user_profile_data = None
+    if os.path.exists(profile_path):
+        with open(profile_path, "r", encoding="utf-8") as f:
+            user_profile_data = json.load(f)
+    profile_text = ""
+    if user_profile_data:
+        profile_text = json.dumps(user_profile_data, indent=2)
+
     system_prompt = f"""
     You are a medical assistant. You can provide information about diseases, symptoms, causes, and risk factors.
     Only respond to medical questions.
@@ -35,9 +46,13 @@ def generate_answer(query, index_file, sentences_file, chat_history, chat_model_
     
     Conversation history:
     {history_text}
+
+    User profile:
+    {profile_text}
     
     Answer:
     """
+    print(system_prompt)
 
     tokenizer = AutoTokenizer.from_pretrained(chat_model_name)
 

@@ -1,0 +1,10 @@
+{
+  "userId": "user-1",
+  "dateOfBirth": "2008-12-24",
+  "gender": "female",
+  "conditions": [],
+  "allergies": [],
+  "currentMedications": [],
+  "isPregnant": true,
+  "pregnancyDueDate": "2025-12-27"
+}

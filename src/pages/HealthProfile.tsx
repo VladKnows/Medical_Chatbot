@@ -99,7 +99,7 @@ export default function HealthProfile() {
   const saveProfile = async () => {
     setIsSaving(true);
     try {
-      const response = await fetch(`/api/health-profile/${profile.userId}`, {
+      const response = await fetch(`/api/health-profile/save`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
